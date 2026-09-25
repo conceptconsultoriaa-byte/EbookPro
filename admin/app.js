@@ -10,13 +10,26 @@ let LEITORES = [];
 let ACESSOS = [];
 let editingEbookId = null;
 
+async function loadOrCreateProdutor(userId) {
+  const { data: existente } = await supabaseClient.from("eb_produtores").select("*").eq("owner_id", userId).maybeSingle();
+  if (existente) return existente;
+  const { data: novo, error } = await supabaseClient.from("eb_produtores").insert({ owner_id: userId }).select().single();
+  if (error) { console.error("Erro ao criar produtor:", error.message); return null; }
+  return novo;
+}
+
 async function boot() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) { window.location.href = "login.html"; return; }
   CURRENT_USER = session.user;
 
-  const { data: produtor } = await supabaseClient.from("eb_produtores").select("*").eq("owner_id", CURRENT_USER.id).maybeSingle();
-  if (!produtor) { window.location.href = "login.html"; return; }
+  const produtor = await loadOrCreateProdutor(CURRENT_USER.id);
+  if (!produtor) {
+    document.querySelector(".content").innerHTML = `
+      <h1>Erro ao carregar sua conta</h1>
+      <p class="hint">Não consegui criar ou encontrar seu cadastro de produtor. Verifique se rodou o schema.sql inteiro (até antes do bloco SEED) no Supabase, depois recarregue esta página.</p>`;
+    return;
+  }
   PRODUTOR = produtor;
 
   document.getElementById("webhookUrl").textContent = `${BACKEND_URL}/api/hotmart/webhook`;
