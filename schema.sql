@@ -44,23 +44,6 @@ alter table eb_produtos enable row level security;
 create policy "dono gerencia produtos" on eb_produtos
   for all using (exists (select 1 from eb_produtores p where p.id = eb_produtos.produtor_id and p.owner_id = auth.uid()))
   with check (exists (select 1 from eb_produtores p where p.id = eb_produtos.produtor_id and p.owner_id = auth.uid()));
--- IMPORTANTE: a tabela base NÃO é liberada geral pra "ativo = true", porque isso deixaria
--- qualquer pessoa logada ler arquivo_url/bonus_url de ebooks que ela não comprou.
--- Só quem tem um eb_acessos pra aquele produto pode ler a linha inteira (com o PDF).
-create policy "leitor ve produtos que possui" on eb_produtos
-  for select using (exists (
-    select 1 from eb_acessos a join eb_leitores l on l.id = a.leitor_id
-    where a.produto_id = eb_produtos.id and l.auth_user_id = auth.uid()
-  ));
-
--- Vitrine pública (só metadados de venda, sem arquivo_url/bonus_url) — usada
--- pra mostrar os ebooks que o leitor AINDA NÃO tem, como oferta de cross-sell.
-create or replace view eb_vitrine as
-  select id, produtor_id, nome, capa_url, descricao, preco_exclusivo, link_compra, ordem
-  from eb_produtos
-  where ativo = true;
-grant select on eb_vitrine to anon, authenticated;
-
 create table if not exists eb_leitores (
   id uuid primary key default gen_random_uuid(),
   produtor_id uuid not null references eb_produtores(id) on delete cascade,
@@ -110,6 +93,24 @@ create policy "leitor ve os proprios acessos" on eb_acessos
 create policy "leitor atualiza o proprio progresso" on eb_acessos
   for update using (exists (select 1 from eb_leitores l where l.id = eb_acessos.leitor_id and l.auth_user_id = auth.uid()))
   with check (exists (select 1 from eb_leitores l where l.id = eb_acessos.leitor_id and l.auth_user_id = auth.uid()));
+
+-- Só agora eb_acessos já existe, então esta política (que depende dela) pode ser criada.
+-- IMPORTANTE: a tabela base NÃO é liberada geral pra "ativo = true", porque isso deixaria
+-- qualquer pessoa logada ler arquivo_url/bonus_url de ebooks que ela não comprou.
+-- Só quem tem um eb_acessos pra aquele produto pode ler a linha inteira (com o PDF).
+create policy "leitor ve produtos que possui" on eb_produtos
+  for select using (exists (
+    select 1 from eb_acessos a join eb_leitores l on l.id = a.leitor_id
+    where a.produto_id = eb_produtos.id and l.auth_user_id = auth.uid()
+  ));
+
+-- Vitrine pública (só metadados de venda, sem arquivo_url/bonus_url) — usada
+-- pra mostrar os ebooks que o leitor AINDA NÃO tem, como oferta de cross-sell.
+create or replace view eb_vitrine as
+  select id, produtor_id, nome, capa_url, descricao, preco_exclusivo, link_compra, ordem
+  from eb_produtos
+  where ativo = true;
+grant select on eb_vitrine to anon, authenticated;
 
 -- Log cru de todo evento recebido da Hotmart, pra depuração/auditoria.
 create table if not exists eb_eventos_hotmart (
