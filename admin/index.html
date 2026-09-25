@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EbookPro Admin — Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div id="app">
+  <header class="topbar">
+    <div class="brand"><span class="brand-name">EbookPro Admin</span></div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="painel">Painel</button>
+      <button class="tab-btn" data-tab="ebooks">Ebooks</button>
+      <button class="tab-btn" data-tab="leitores">Leitores</button>
+      <button class="tab-btn" data-tab="importar">Importar Base</button>
+      <button class="tab-btn" data-tab="webhook">Webhook Hotmart</button>
+      <button class="tab-btn" id="logoutBtn">Sair</button>
+    </nav>
+  </header>
+
+  <main class="content">
+
+    <section id="tab-painel" class="tab-panel active">
+      <h1>Visão geral</h1>
+      <div class="cards">
+        <div class="card"><span class="card-label">Ebooks cadastrados</span><span class="card-value" id="statEbooks">0</span></div>
+        <div class="card"><span class="card-label">Leitores</span><span class="card-value" id="statLeitores">0</span></div>
+        <div class="card"><span class="card-label">Acessos liberados</span><span class="card-value" id="statAcessos">0</span></div>
+        <div class="card"><span class="card-label">Ebooks concluídos</span><span class="card-value" id="statConcluidos">0</span></div>
+      </div>
+    </section>
+
+    <section id="tab-ebooks" class="tab-panel">
+      <h1>Ebooks</h1>
+      <form id="ebookForm" class="form-grid">
+        <p id="ebookFormTitle" class="hint" style="grid-column:1/-1; margin:0; display:none; font-weight:800; text-transform:uppercase; font-size:0.78rem; color:var(--lime);"></p>
+        <label>Nome <input type="text" id="ebNome" required></label>
+        <label>Ordem na trilha <input type="number" id="ebOrdem" value="1" min="1"></label>
+        <label>Capa (URL ou caminho, ex: capas/nome.jpg) <input type="text" id="ebCapa"></label>
+        <label>Arquivo do ebook (link do PDF) <input type="text" id="ebArquivo"></label>
+        <label>Link de compra na Hotmart <input type="text" id="ebLinkCompra"></label>
+        <label>ID do produto na Hotmart <input type="text" id="ebHotmartId" placeholder="pegue no painel da Hotmart"></label>
+        <label>Preço exclusivo p/ quem já é leitor (R$) <input type="number" id="ebPrecoExclusivo" step="0.01" min="0"></label>
+        <label>Descrição do bônus (desbloqueia ao concluir) <input type="text" id="ebBonusDescricao"></label>
+        <label>Link do bônus <input type="text" id="ebBonusUrl"></label>
+        <label>Descrição <input type="text" id="ebDescricao"></label>
+        <div style="display:flex; gap:10px; align-items:flex-end;">
+          <button type="submit" class="btn-primary" id="ebookFormSubmitBtn">Cadastrar ebook</button>
+          <button type="button" class="btn-secondary" id="ebookFormCancelBtn" style="display:none;">Cancelar edição</button>
+        </div>
+      </form>
+      <div id="ebooksList" class="list"></div>
+    </section>
+
+    <section id="tab-leitores" class="tab-panel">
+      <h1>Leitores</h1>
+      <div class="form-inline">
+        <input type="text" id="filtroLeitor" placeholder="Buscar por nome ou e-mail">
+      </div>
+      <div id="leitoresList" class="list"></div>
+    </section>
+
+    <section id="tab-importar" class="tab-panel">
+      <h1>Importar base antiga</h1>
+      <p class="hint">Exporte a lista de compradores no painel da Hotmart (Vendas → Exportar) e cole aqui, uma linha por pessoa, no formato: <code>email, nome, telefone, nome do ebook</code>. Isso libera o acesso pra quem já comprou antes do app existir — não precisa esperar uma compra nova.</p>
+      <textarea id="importarTexto" rows="10" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font-family:monospace;" placeholder="joao@email.com, João Silva, 5511999999999, Oficina Lucrativa em 7 Dias"></textarea>
+      <button class="btn-primary" id="btnImportar" style="margin-top:12px;">Importar</button>
+      <div id="importarResultado" class="hint" style="margin-top:12px;"></div>
+    </section>
+
+    <section id="tab-webhook" class="tab-panel">
+      <h1>Configurar o Webhook na Hotmart</h1>
+      <p class="hint">Siga esses passos uma vez só, no painel da Hotmart:</p>
+      <ol class="hint" style="line-height:1.9;">
+        <li>Entre em <strong>Ferramentas → Webhook</strong> (dentro da área de Produtor).</li>
+        <li>Clique em <strong>Criar Webhook</strong>.</li>
+        <li>Cole essa URL no campo de endereço: <code id="webhookUrl">carregando...</code> <button class="btn-secondary" id="btnCopiarWebhook" style="margin-left:8px;">Copiar</button></li>
+        <li>Marque o evento <strong>Compra Aprovada</strong> (PURCHASE_APPROVED).</li>
+        <li>Copie o código "Hottok" gerado e me envie — eu configuro no servidor.</li>
+        <li>Selecione se o webhook vale pra todos os produtos ou escolha os 6 ebooks manualmente.</li>
+      </ol>
+      <p class="hint">Depois disso, toda compra aprovada libera o acesso automaticamente — não precisa fazer mais nada.</p>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script src="../lib/supabaseClient.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

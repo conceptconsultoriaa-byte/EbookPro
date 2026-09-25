@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EbookPro — Sua Estante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-wrap">
+    <div class="auth-photo">
+      <div class="auth-photo-caption">Todo o conteúdo que você comprou,<br>numa estante só sua.</div>
+    </div>
+    <div class="auth-card">
+      <h1>EbookPro</h1>
+      <p class="hint">Digite o e-mail que você usou na compra. A gente manda um link — sem senha, sem complicação.</p>
+
+      <form id="loginForm" class="auth-form">
+        <label>Seu e-mail <input type="email" id="loginEmail" required placeholder="voce@email.com"></label>
+        <button type="submit" class="btn-primary" id="btnEnviarLink">Enviar link de acesso</button>
+      </form>
+
+      <p id="authMsg" class="hint"></p>
+      <p class="hint" style="margin-top:24px;">É o produtor? <a href="admin/login.html" style="color:var(--lime);font-weight:700;">Entrar como administrador</a></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="lib/supabaseClient.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

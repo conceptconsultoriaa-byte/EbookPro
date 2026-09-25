@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EbookPro — Minha Estante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .estante{ display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:18px; margin-top:16px; }
+  .livro{ background:var(--surface); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+  .livro-capa{ position:relative; width:100%; aspect-ratio:3/4; background:var(--surface-2); overflow:hidden; }
+  .livro-capa img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .livro-capa.bloqueado img{ filter:grayscale(0.6) brightness(0.5); }
+  .livro-selo{ position:absolute; top:8px; right:8px; background:var(--lime); color:var(--lime-ink); font-weight:800; font-size:11px; text-transform:uppercase; padding:4px 8px; border-radius:999px; }
+  .livro-cadeado{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:32px; }
+  .livro-body{ padding:12px; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .livro-nome{ font-size:0.86rem; font-weight:800; line-height:1.25; }
+  .livro-progresso{ height:6px; background:var(--line); border-radius:999px; overflow:hidden; }
+  .livro-progresso-fill{ height:100%; background:var(--lime); }
+  .livro-preco{ font-family:'Anton',sans-serif; font-size:1.05rem; color:var(--lime); }
+  .colecao-banner{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-top:16px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+  .colecao-banner .num{ font-family:'Anton',sans-serif; font-size:1.6rem; color:var(--lime); }
+  #leitorModal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+  #leitorModal.aberto{ display:flex; }
+  .leitor-box{ background:var(--surface); border-radius:14px; width:100%; max-width:900px; height:90vh; display:flex; flex-direction:column; overflow:hidden; }
+  .leitor-head{ display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); gap:10px; flex-wrap:wrap; }
+  .leitor-head h3{ margin:0; font-size:1rem; }
+  .leitor-iframe{ flex:1; border:none; background:#fff; }
+  .bonus-box{ background:var(--surface-2); border:1px dashed var(--lime); border-radius:10px; padding:12px 14px; margin:0 18px 14px; font-size:0.85rem; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="topbar">
+    <div class="brand"><span id="brandName" class="brand-name">EbookPro</span></div>
+    <nav class="tabs">
+      <a class="tab-btn" href="https://conceptconsultoriaa-byte.github.io/BOX7MOTOPOINT/" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center;">Nosso site</a>
+      <button class="tab-btn" id="logoutBtn">Sair</button>
+    </nav>
+  </header>
+
+  <main class="content">
+    <h1>Minha Estante</h1>
+    <div class="colecao-banner">
+      <div><strong id="colecaoTexto">Carregando sua coleção...</strong><div class="hint" style="margin:4px 0 0;">Continue lendo pra desbloquear os bônus de cada ebook.</div></div>
+      <div class="num" id="colecaoNum">0/0</div>
+    </div>
+
+    <div id="alertaNovidade"></div>
+
+    <h2 style="margin-top:28px;">Seus ebooks</h2>
+    <div id="meusLivros" class="estante"></div>
+
+    <h2 style="margin-top:32px;">Complete sua coleção</h2>
+    <p class="hint" style="margin-top:0;">Estes ainda não estão na sua estante.</p>
+    <div id="outrosLivros" class="estante"></div>
+  </main>
+</div>
+
+<div id="leitorModal">
+  <div class="leitor-box">
+    <div class="leitor-head">
+      <h3 id="leitorTitulo">—</h3>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-secondary" id="btnMarcarConcluido">Marcar como concluído</button>
+        <button class="btn-danger" id="btnFecharLeitor">Fechar</button>
+      </div>
+    </div>
+    <div id="bonusBox" class="bonus-box" style="display:none;"></div>
+    <iframe id="leitorIframe" class="leitor-iframe"></iframe>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="lib/supabaseClient.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
