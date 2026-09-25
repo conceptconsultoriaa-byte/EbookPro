@@ -222,7 +222,7 @@ h2{font-family:'Anton', Arial, sans-serif; font-size:1.05rem; text-transform:upp
 }
 .auth-photo{
   flex:1 1 46%; min-height:560px; position:relative;
-  background:radial-gradient(circle at 30% 20%, #2A2118 0%, #0E0E0E 65%);
+  background:#0E0E0E url('fotos/equipe-oficina.webp') center/cover no-repeat;
 }
 .auth-photo::after{
   content:""; position:absolute; inset:0;
