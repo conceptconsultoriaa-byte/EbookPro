@@ -7,9 +7,21 @@ let ACESSOS = [];   // [{ ...eb_acessos, eb_produtos: {...} }]
 let VITRINE = [];   // eb_vitrine (catálogo público, sem arquivo_url)
 let ACESSO_ATUAL = null;
 
+function renderBannerInstalar() {
+  try {
+    if (localStorage.getItem("ebookpro_instalar_dismissed")) return;
+  } catch (e) { /* localStorage indisponível (aba anônima etc.) — só não mostra o aviso */ return; }
+  document.getElementById("instalarBanner").style.display = "flex";
+}
+document.getElementById("btnFecharInstalar").addEventListener("click", () => {
+  document.getElementById("instalarBanner").style.display = "none";
+  try { localStorage.setItem("ebookpro_instalar_dismissed", "1"); } catch (e) { /* tudo bem, só reaparece na próxima visita */ }
+});
+
 async function boot() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) { window.location.href = "login.html"; return; }
+  renderBannerInstalar();
 
   // Liga essa conta (auth.uid()) ao cadastro de leitor pré-criado pelo webhook da Hotmart.
   await supabaseClient.rpc("eb_vincular_por_email");

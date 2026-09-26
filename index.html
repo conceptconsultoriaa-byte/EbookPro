@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EbookPro — Minha Estante</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icones/icon-192.png">
+<link rel="apple-touch-icon" href="icones/icon-192.png">
+<meta name="theme-color" content="#0E0E0E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -45,6 +49,16 @@
 
   <main class="content">
     <h1>Minha Estante</h1>
+    <div id="instalarBanner" class="colecao-banner" style="display:none; margin-bottom:16px;">
+      <div>
+        <strong>Adicione à tela inicial e nunca mais perca o acesso</strong>
+        <div class="hint" style="margin:4px 0 0;">
+          <strong>Android (Chrome):</strong> toque nos 3 pontinhos ⋮ no canto e escolha "Adicionar à tela inicial".<br>
+          <strong>iPhone (Safari):</strong> toque no ícone de compartilhar e escolha "Adicionar à Tela de Início".
+        </div>
+      </div>
+      <button class="btn-secondary" id="btnFecharInstalar">Entendi</button>
+    </div>
     <div class="colecao-banner">
       <div><strong id="colecaoTexto">Carregando sua coleção...</strong><div class="hint" style="margin:4px 0 0;">Continue lendo pra desbloquear os bônus de cada ebook.</div></div>
       <div class="num" id="colecaoNum">0/0</div>
